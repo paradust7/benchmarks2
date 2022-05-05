@@ -3,7 +3,8 @@ name: track_minetest
 # build on c/cpp changes or workflow changes
 on:
   schedule:
-    # Runs every minute
+    # This cron line says to run every minute, but in practice github appears
+    # to run it sporadically every 7 to 15 minutes.
     - cron: '* * * * *'
 
 permissions:
@@ -25,4 +26,3 @@ jobs:
           ./push-revs.sh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
