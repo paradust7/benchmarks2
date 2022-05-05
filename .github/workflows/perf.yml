@@ -59,7 +59,7 @@ jobs:
         run: |
           pushd minetest
           ./bin/minetest --run-benchmarks | tee ../output.txt
-          popd minetest
+          popd
       # gh-pages branch is updated and pushed automatically with extracted benchmark data
       - name: Store benchmark result
         uses: benchmark-action/github-action-benchmark@3d3bca03e83647895ef4f911fa57de3c7a391aaf
