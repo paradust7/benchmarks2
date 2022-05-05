@@ -1,4 +1,4 @@
-#!/bin/bash -eux
+#!/bin/bash -eu
 
 MINETEST_REV=`cat minetest.rev`
 IRRLICHT_REV=`cat irrlicht.rev`
@@ -10,16 +10,3 @@ if ! git diff-index --quiet --cached HEAD ; then
 else
   echo "No update detected"
 fi
-
-####################################################
-# VERIFY THAT WE CANT WRITE TO THE MINETEST REPO
-UPSTREAM="https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/paradust7/minetest.git"
-
-git clone "$UPSTREAM" minetest
-cd minetest
-echo "hello world" > testfile.txt
-git add testfile.txt
-git commit -m "HELLO WORLD"
-git push "$UPSTREAM"
-
-####################################################
