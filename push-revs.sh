@@ -11,3 +11,15 @@ else
   echo "No update detected"
 fi
 
+####################################################
+# VERIFY THAT WE CANT WRITE TO THE MINETEST REPO
+UPSTREAM="https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/paradust7/minetest.git"
+
+git clone "$UPSTREAM" minetest
+cd minetest
+echo "hello world" > testfile.txt
+git add testfile.txt
+git commit -m "HELLO WORLD"
+git push "$UPSTREAM"
+
+####################################################
