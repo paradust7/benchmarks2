@@ -6,6 +6,10 @@ on:
     # Runs every minute
     - cron: '* * * * *'
 
+permissions:
+  deployments: write
+  contents: write
+
 jobs:
   # Current gcc version
   update_repo:
