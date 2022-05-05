@@ -39,8 +39,10 @@ jobs:
           path: 'minetest/lib/irrlichtmt'
       - name: Install deps
         run: |
+          pushd minetest
           source ./util/ci/common.sh --no-irr
           install_linux_deps g++-10
+          popd
       - name: Build
         run: |
           pushd minetest
