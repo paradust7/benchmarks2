@@ -21,7 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       # Retrieve revision numbers
-      - name Retrieve revision numbers
+      - name: Retrieve revision numbers
         run: |
           echo "MINETEST_REV=$(cat minetest.rev)" >> $GITHUB_ENV
           echo "IRRLICHT_REV=$(cat irrlicht.rev)" >> $GITHUB_ENV
