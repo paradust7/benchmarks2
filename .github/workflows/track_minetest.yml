@@ -6,10 +6,6 @@ on:
     # Runs every minute
     - cron: '* * * * *'
 
-permissions:
-  # To push back to this repo
-  contents: write
-
 jobs:
   # Current gcc version
   update_repo:
@@ -19,49 +15,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Update minetest revision
         run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           ./update-revs.sh
-      # Checkout irrlicht
-      - uses: actions/checkout@v2
-        with:
-          repository: 'minetest/irrlicht'
-          path: 'minetest/lib/irrlichtmt'
-      # Install deps
-      - name: Install deps
-        run: |
-          source ./util/ci/common.sh --no-irr
-          install_linux_deps g++-10
-      # Build
-      - name: Build
-        run: |
-          ./util/ci/build.sh
-        env:
-          CC: gcc-10
-          CXX: g++-10
-          CMAKE_BUILD_TYPE: "Release"
-          CMAKE_BUILD_SERVER: FALSE
-          CMAKE_ENABLE_GETTEXT: FALSE
-          CMAKE_FLAGS: "-DBUILD_BENCHMARKS=TRUE"
-
-      - name: Run Benchmarks
-        run: |
-          ./bin/minetest --run-benchmarks | tee output.txt
-
-      # gh-pages branch is updated and pushed automatically with extracted benchmark data
-      - name: Store benchmark result
-        uses: benchmark-action/github-action-benchmark@v1
-        with:
-          name: Minetest Performance Benchmarks
-          tool: 'catch2'
-          output-file-path: output.txt
-          # Access token to deploy GitHub Pages branch
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          # Push and deploy GitHub pages branch automatically
-          auto-push: true
-          # If there's a regression, comment on the commit.
-          # Temporarily disabled due to a bug in github-action-benchmark
-          comment-on-alert: false
-          # Branch and path where benchmark is stored and updated.
-          # This corresponds to:
-          #     https://minetest.github.io/minetest/dev/bench
-          gh-pages-branch: "gh-pages"
-          benchmark-data-dir-path: "dev/bench"
+          ./push-revs.sh

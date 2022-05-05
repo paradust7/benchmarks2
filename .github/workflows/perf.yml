@@ -3,18 +3,8 @@ name: perf
 # build on c/cpp changes or workflow changes
 on:
   push:
-    paths:
-      - 'lib/**.[ch]'
-      - 'lib/**.cpp'
-      - 'src/**.[ch]'
-      - 'src/**.cpp'
-      - '**/CMakeLists.txt'
-      - 'cmake/Modules/**'
-      - 'util/buildbot/**'
-      - 'util/ci/**'
-      - '.github/workflows/**.yml'
-      - 'Dockerfile'
-      - '.dockerignore'
+    branches:
+      - main
 # IMPORTANT: Do not run this workflow on pull request since this workflow
 # has permission to modify contents.
 
@@ -30,14 +20,32 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
+      # Retrieve revision numbers
+      - name Retrieve revision numbers
+        run: |
+          echo "MINETEST_REV=$(cat minetest.rev)" >> $GITHUB_ENV
+          echo "IRRLICHT_REV=$(cat irrlicht.rev)" >> $GITHUB_ENV
+      # Checkout minetest
+      - uses: actions/checkout@v2
+        with:
+          repository: '${{ env.GITHUB_REPOSITORY_OWNER }}/irrlicht'
+          ref: ${{ env.MINETEST_REV }}
+          path: 'minetest'
+      # Checkout irrlicht
+      - uses: actions/checkout@v2
+        with:
+          repository: '${{ env.GITHUB_REPOSITORY_OWNER }}/irrlicht'
+          ref: ${{ env.IRRLICHT_REV }}
+          path: 'minetest/lib/irrlichtmt'
       - name: Install deps
         run: |
-          source ./util/ci/common.sh
+          source ./util/ci/common.sh --no-irr
           install_linux_deps g++-10
-
       - name: Build
         run: |
+          pushd minetest
           ./util/ci/build.sh
+          popd
         env:
           CC: gcc-10
           CXX: g++-10
@@ -45,14 +53,14 @@ jobs:
           CMAKE_BUILD_SERVER: FALSE
           CMAKE_ENABLE_GETTEXT: FALSE
           CMAKE_FLAGS: "-DBUILD_BENCHMARKS=TRUE"
-
       - name: Run Benchmarks
         run: |
-          ./bin/minetest --run-benchmarks | tee output.txt
-
+          pushd minetest
+          ./bin/minetest --run-benchmarks | tee ../output.txt
+          popd minetest
       # gh-pages branch is updated and pushed automatically with extracted benchmark data
       - name: Store benchmark result
-        uses: benchmark-action/github-action-benchmark@v1
+        uses: benchmark-action/github-action-benchmark@3d3bca03e83647895ef4f911fa57de3c7a391aaf
         with:
           name: Minetest Performance Benchmarks
           tool: 'catch2'
