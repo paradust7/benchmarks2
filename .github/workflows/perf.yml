@@ -28,13 +28,13 @@ jobs:
       # Checkout minetest
       - uses: actions/checkout@v2
         with:
-          repository: '${{ env.GITHUB_REPOSITORY_OWNER }}/irrlicht'
+          repository: 'minetest'
           ref: ${{ env.MINETEST_REV }}
           path: 'minetest'
       # Checkout irrlicht
       - uses: actions/checkout@v2
         with:
-          repository: '${{ env.GITHUB_REPOSITORY_OWNER }}/irrlicht'
+          repository: 'irrlicht'
           ref: ${{ env.IRRLICHT_REV }}
           path: 'minetest/lib/irrlichtmt'
       - name: Install deps
